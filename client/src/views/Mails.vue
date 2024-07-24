@@ -1,11 +1,13 @@
 <template>
   <div>
     <h1>Mails</h1>
-    <v-btn color="primary" @click="handleRefresh">Refresh</v-btn>
-    <v-table>
+    <button @click="handleRefresh">Refresh</button>
+    <table>
       <thead>
         <tr>
           <th>Account Email</th>
+          <th>From</th>
+          <th>To</th>
           <th>Subject</th>
           <th>Body Preview</th>
           <th>Is Read</th>
@@ -14,42 +16,29 @@
       <tbody>
         <tr v-for="(email, index) in emails" :key="index">
           <td>{{ email.account_email }}</td>
+          <td>{{ email.from_name }}</td>
+          <td>{{ email.to_name }}</td>
           <td>{{ email.subject }}</td>
           <td>{{ email.body }}</td>
           <td>{{ email.isRead ? 'Yes' : 'No' }}</td>
         </tr>
       </tbody>
-    </v-table>
+    </table>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import { FETCH_ACCOUNT_EMAILS } from "@/graphql/mutation"; // Adjust the path accordingly
 
 @Component
 export default class Mails extends Vue {
+  @Prop({ required: true }) accountId!: string;
   emails: Array<any> = [];
-  isAuthenticated: boolean = false;
-  accountId: string = "random-number-for-testing-1";
-
-  async checkAuthentication() {
-    try {
-      const response = await axios.get(
-        "http://localhost:3000/isAuthenticated",
-        { withCredentials: true }
-      );
-      console.log("ISAUTH???", response.data.isAuthenticated);
-      this.isAuthenticated = response.data.isAuthenticated;
-    } catch (error) {
-      console.error("Error checking authentication status:", error);
-      this.$router.push("/");
-    }
-  }
 
   async fetchEmails() {
     try {
+      console.log("PROPSSSS",this.accountId)
       const response = await this.$apollo.query({
         query: FETCH_ACCOUNT_EMAILS,
         variables: { accountId: this.accountId },
@@ -70,15 +59,42 @@ export default class Mails extends Vue {
   }
 
   mounted() {
-    this.checkAuthentication();
-  }
-
-  @Watch("isAuthenticated")
-  onIsAuthenticatedChanged(newVal: boolean) {
-    if (newVal) {
-      alert("Authenticated")
-      this.fetchEmails();
-    }
+    this.fetchEmails();
   }
 }
 </script>
+
+<style scoped>
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+</style>

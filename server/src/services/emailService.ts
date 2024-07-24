@@ -1,8 +1,10 @@
-
-import axios from 'axios';
-import { exec } from 'child_process';
-import User from '../types/user';
-import { updateAccessToken, initializeClientWithAccessToken } from '../services/authService';
+import axios from "axios";
+import { exec } from "child_process";
+import User from "../types/user";
+import {
+  updateAccessToken,
+  initializeClientWithAccessToken,
+} from "../services/authService";
 
 export const fetchEmailsAndIndex = async (user: User) => {
   await updateAccessToken(user);
@@ -10,10 +12,10 @@ export const fetchEmailsAndIndex = async (user: User) => {
   // Check if accessToken is defined
   const accessToken = user.accessToken;
   if (!accessToken) {
-    throw new Error('Access token is not available');
+    throw new Error("Access token is not available");
   }
 
-
+  // in User table we have this user_id means this user is linking the account
   const accountDetails = {
     userId: "707fd1d0-3a9a-434e-8599-b6c20c402628",
     accountId: user.id,
@@ -29,34 +31,38 @@ export const fetchEmailsAndIndex = async (user: User) => {
   const client = initializeClientWithAccessToken(accessToken);
 
   let allEmails: any[] = [];
-  let response = await client.api('/me/messages').get();
-  allEmails.push(...response.value)
-
-  const account_id  = createAccount_response.data?.insert_linked_accounts?.returning[0]?.account_id
+  let response = await client.api("/me/messages").get();
+  allEmails.push(...response.value);
+  // console.log("ALLEMAILSSSS", allEmails);
+  const account_id =
+    createAccount_response.data?.insert_linked_accounts?.returning[0]
+      ?.account_id;
   const bulkData = allEmails.map((email: any) => {
     return {
+      email_id: email.id,
       account_id,
-      from_name: email.isDraft ? null : email.from.emailAddress.name ,
-      to_name: email.isDraft || !email.toRecipients ? null : email.toRecipients.map((recipient: any) => recipient.emailAddress.name).join(', '),
-      body: email.bodyPreview ,
-      subject: email.subject ,
+      from_name: email.isDraft ? null : email.from.emailAddress.name,
+      to_name:
+        email.isDraft || !email.toRecipients
+          ? null
+          : email.toRecipients
+              .map((recipient: any) => recipient.emailAddress.name)
+              .join(", "),
+      body: email.bodyPreview,
+      subject: email.subject,
     };
   });
-  for (const emailData of bulkData) {
-    try {
-      const response = await axios.post('http://localhost:8082/api/rest/insert_mails', emailData);
-      console.log('Email saved to database successfully:', response.data);
-    } catch (error) {
-      
-      console.error('Error saving email to database:');
-
-    }
+  try {
+    const response = await axios.post(
+      "http://localhost:8082/api/rest/insert_mails",
+      { objects: bulkData }
+    );
+    console.log("Email saved to database successfully:", response.data);
+  } catch (error) {
+    console.error("Error saving email to database:");
   }
 
-
-return {data: allEmails}
-
-
+  return { data: allEmails };
 
   // const tempFilePath = path.join(__dirname, 'bulk_data.ndjson');
   // fs.writeFileSync(tempFilePath, bulkData);
@@ -78,8 +84,7 @@ return {data: allEmails}
   //     }
   //   });
   // });
-}
-
+};
 
 export const queryEmails = async (userId: string) => {
   const query = `
@@ -97,14 +102,18 @@ export const queryEmails = async (userId: string) => {
   return new Promise<any[]>((resolve, reject) => {
     exec(query, (error, stdout, stderr) => {
       if (error) {
-        console.error('Error querying emails:', stderr);
+        console.error("Error querying emails:", stderr);
         reject(new Error(stderr));
       }
 
       const result = JSON.parse(stdout);
-      if (!result.hits || !result.hits.hits || !Array.isArray(result.hits.hits)) {
-        console.error('Invalid data format received:', result);
-        reject(new Error('Invalid data format received'));
+      if (
+        !result.hits ||
+        !result.hits.hits ||
+        !Array.isArray(result.hits.hits)
+      ) {
+        console.error("Invalid data format received:", result);
+        reject(new Error("Invalid data format received"));
       }
 
       const emails = result.hits.hits.map((hit: any) => hit._source);

@@ -26,8 +26,9 @@ export const outlookCallback = [
 
 export const isAuthenticated = (req: Request, res: Response) => {
   if (req.isAuthenticated()) {
-    res.json({ isAuthenticated: true });
+    const account = req.user;
+    res.json({ isAuthenticated: true , account });
   } else {
-    res.json({ isAuthenticated: false });
+    res.json({ isAuthenticated: false , account: null});
   }
 };

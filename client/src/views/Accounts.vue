@@ -1,8 +1,9 @@
 <template>
-    <div>
-      <v-btn :disabled="logged" @click="handleLogin">Log in</v-btn>
-    </div>
-  </template>
+  <div>
+    <button :disabled="logged" class="primary-btn" @click="handleLogin">Log in</button>
+  </div>
+</template>
+
   
   <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
@@ -34,6 +35,25 @@
   </script>
   
   <style scoped>
-  /* Add your component-specific styles here */
-  </style>
-  
+.primary-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.primary-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+</style>

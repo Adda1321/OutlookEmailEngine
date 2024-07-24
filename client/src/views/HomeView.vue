@@ -1,39 +1,104 @@
 <template>
   <div>
-    <div>
-      <v-btn color="primary" @click="handlePageChange('mails')">Mails</v-btn>
-      <v-btn color="primary" class="ml-4" @click="handlePageChange('link-account')">Link Account</v-btn>
+    <nav class="navbar">
+      <span class="navbar-brand">Logged in as: John Doe</span>
+    </nav>
+
+    <div class="button-container">
+      <button class="primary-btn" v-if="!isAuthenticated" @click="handleLogin">Link Outlook Account</button>
+      <button class="primary-btn" v-else @click="handlePageChange('mails')">Mails</button>
+      <button class="primary-btn ml-4" v-if="!isAuthenticated && currentPage === 'link-account'" @click="handlePageChange('link-account')">Link Account</button>
     </div>
 
-    <Mails v-if="currentPage === 'mails'" />
-    <Accounts v-if="currentPage === 'link-account'" />
+    <Mails v-if="isAuthenticated && currentPage === 'mails'" :accountId="accountId" />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import Mails from './Mails.vue';
-import Accounts from './Accounts.vue';
-
-localStorage.setItem('user', JSON.stringify("707fd1d0-3a9a-434e-8599-b6c20c402628"));
+import { Component, Vue } from "vue-property-decorator";
+import axios from "axios";
+import Mails from "@/views/Mails.vue";
+import Accounts from "@/views/Accounts.vue";
 
 @Component({
   components: {
     Mails,
-    Accounts,
-  },
+    Accounts
+  }
 })
-export default class HomeView extends Vue {
-  currentPage: string = 'mails';
+export default class App extends Vue {
+  isAuthenticated: boolean = false;
+  currentPage: string = '';
+  accountId: string = '';
+
+  async checkAuthentication() {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/isAuthenticated",
+        { withCredentials: true }
+      );
+      // alert("isAuthenticated:"+response.data.isAuthenticated)
+      this.isAuthenticated = response.data.isAuthenticated;
+      this.accountId = response.data.account;
+      if (this.isAuthenticated) {
+        this.currentPage = 'mails';
+      }
+    } catch (error) {
+      console.error("Error checking authentication status:", error);
+    }
+  }
 
   handlePageChange(page: string) {
     this.currentPage = page;
+  }
+
+  handleLogin() {
+    window.location.href = "http://localhost:3000/auth/outlook";
+  }
+
+  mounted() {
+    this.checkAuthentication();
   }
 }
 </script>
 
 <style scoped>
+.navbar {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+
+.button-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.primary-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
 .ml-4 {
-  margin-left: 1rem;
+  margin-left: 16px;
 }
 </style>

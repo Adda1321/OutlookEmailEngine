@@ -1,3 +1,5 @@
+// -------------------------------- Note using now   ----------------------------
+
 import {
   PublicClientApplication,
   type AccountInfo,

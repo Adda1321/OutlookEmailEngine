@@ -1,3 +1,5 @@
+// -------------------------------- Note using now   ----------------------------
+
 import axios from "axios";
 import { msalInstance, state } from "./msalConfig";
 import { AuthCodeMSALBrowserAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
