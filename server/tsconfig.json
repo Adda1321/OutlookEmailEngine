@@ -7,7 +7,7 @@
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
       "outDir": "./dist",
-      "typeRoots": ["./src/types", "./node_modules/@types"]
+      "typeRoots": ["./src/types", "./node_modules/@types",  "./express-session.d.ts"]
     },
     "include": ["src/**/*.ts", "src/modelsz.ts", "src/app.ts", "src/types/*.ts"],
     "exclude": ["node_modules"]

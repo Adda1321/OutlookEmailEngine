@@ -17,8 +17,10 @@ import emailRoutes from './routes/emailRoutes'
 import subscriptionRoutes from './routes/subscriptionRoutes'
 import notificationRoutes from './routes/notificationRoutes'
 
+import * as dotenv from 'dotenv';
 
 const app = express();
+dotenv.config();
 
 app.use(cors({
   origin: 'http://localhost:3001',

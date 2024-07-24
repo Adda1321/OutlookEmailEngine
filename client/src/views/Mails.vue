@@ -11,18 +11,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(email, index) in emails" :key="index">
+        <!-- <tr v-for="(email, index) in emails" :key="index">
           <td>{{ email.subject }}</td>
           <td>{{ email.body }}</td>
           <td>{{ email.isRead ? 'Yes' : 'No' }}</td>
-        </tr>
+        </tr> -->
       </tbody>
     </v-table>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue , Watch } from 'vue-property-decorator';
 import axios from 'axios';
 
 @Component
@@ -33,6 +33,7 @@ export default class Mails extends Vue {
   async checkAuthentication() {
     try {
       const response = await axios.get('http://localhost:3000/isAuthenticated', { withCredentials: true });
+      console.log("ISAUTH???",response.data.isAuthenticated)
       this.isAuthenticated = response.data.isAuthenticated;
     } catch (error) {
       console.error('Error checking authentication status:', error);
@@ -56,6 +57,24 @@ export default class Mails extends Vue {
     }
   }
 
+  // async createAccount() {
+  //   try {
+  //     const response = await axios.get('http://localhost:3000/createaccount', {
+  //       headers: {
+  //         user_id: "707fd1d0-3a9a-434e-8599-b6c20c402628",
+  //       },
+  //       withCredentials: true,
+  //     });
+  //     if (response.status === 201) {
+  //       console.log('Account created successfully');
+  //     } else {
+  //       console.error('Failed to create account', response);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating account:', error);
+  //   }
+  // }
+
   handleRefresh() {
     this.fetchEmails();
   }
@@ -64,20 +83,16 @@ export default class Mails extends Vue {
     this.checkAuthentication();
   }
 
-  watch: {
-    isAuthenticated(newVal: boolean) {
-      if (newVal) {
-        this.fetchEmails();
-      }
+  @Watch('isAuthenticated')
+  onIsAuthenticatedChanged(newVal: boolean) {
+    if (newVal) {
+      alert("isAuthenticated:::", newVal);
     }
   }
 }
 </script>
 
 <style scoped>
-.ml-4 {
-  margin-left: 1rem;
-}
 .v-table {
   border-collapse: collapse;
   width: 100%;

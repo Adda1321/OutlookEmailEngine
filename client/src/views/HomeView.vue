@@ -15,6 +15,8 @@ import { Vue, Component } from 'vue-property-decorator';
 import Mails from './Mails.vue';
 import Accounts from './Accounts.vue';
 
+localStorage.setItem('user', JSON.stringify("707fd1d0-3a9a-434e-8599-b6c20c402628"));
+
 @Component({
   components: {
     Mails,

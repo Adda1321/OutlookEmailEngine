@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+
 import axios from 'axios';
 import { exec } from 'child_process';
 import User from '../types/user';
@@ -14,45 +13,43 @@ export const fetchEmailsAndIndex = async (user: User) => {
     throw new Error('Access token is not available');
   }
 
+
+  const accountDetails = {
+    userId: "707fd1d0-3a9a-434e-8599-b6c20c402628",
+    accountId: user.id,
+    accountEmail: user.email,
+    accessToken: user.accessToken,
+    createdAt: new Date().toString(),
+  };
+  const createAccount_response = await axios.post(
+    "http://localhost:8082/api/rest/createaccount",
+    accountDetails
+  );
+
   const client = initializeClientWithAccessToken(accessToken);
 
   let allEmails: any[] = [];
   let response = await client.api('/me/messages').get();
   allEmails.push(...response.value)
 
-  // const bulkData = allEmails.map((email: any) => {
-  //   const parsedEmail: any = {
-  //     account_id: user.id,
-  //     subject: email.subject,
-  //     body: email.bodyPreview,
-  //     isRead: email.isRead,
-  //     datetime: email.receivedDateTime,
-  //     from: email.isDraft ? null : email.from.emailAddress,
-  //     to: email.isDraft || !email.toRecipients ? [] : email.toRecipients.map((recipient: any) => recipient.emailAddress),
-  //   };
-
-  //   return [
-  //     // JSON.stringify({ index: { _index: 'account_mails', _id: email.id } }),
-  //     JSON.stringify(parsedEmail)
-  //   ].join('\n');
-  // }).join('\n') + '\n';
-  
+  const account_id  = createAccount_response.data?.insert_linked_accounts?.returning[0]?.account_id
   const bulkData = allEmails.map((email: any) => {
     return {
-      account_id: user.id,
-      from_name: email.isDraft ? null : email.from.emailAddress.name,
+      account_id,
+      from_name: email.isDraft ? null : email.from.emailAddress.name ,
       to_name: email.isDraft || !email.toRecipients ? null : email.toRecipients.map((recipient: any) => recipient.emailAddress.name).join(', '),
-      body: email.bodyPreview,
-      subject: email.subject,
+      body: email.bodyPreview ,
+      subject: email.subject ,
     };
   });
-
   for (const emailData of bulkData) {
     try {
       const response = await axios.post('http://localhost:8082/api/rest/insert_mails', emailData);
       console.log('Email saved to database successfully:', response.data);
     } catch (error) {
+      
       console.error('Error saving email to database:');
+
     }
   }
 
