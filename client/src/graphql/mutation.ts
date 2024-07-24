@@ -12,11 +12,18 @@ export const CREATE_USER = gql`
   }
 `;
 
-// export const CREATE_USER = gql`
-//   mutation addUser($user: addUser) {
-//     addUser(userr: $user) {
-//       name
-//       phone
-//     }
-//   }
-// `;
+export const FETCH_ACCOUNT_EMAILS = gql`
+  query fetchAccountEmails($accountId: String!) {
+    linked_accounts(where: { account_id: { _eq: $accountId } }) {
+      account_email
+      mails {
+        body
+        subject
+        from_name
+        to_name
+      }
+    }
+  }
+`;
+
+
