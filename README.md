@@ -1,4 +1,4 @@
-# Project EmailEngine: with Hasura | GraphQL | Node | Vue 2 | Typescript
+# Project EmailEngine: with Hasura | GraphQL | Node | Vue 2 | Typescript | Auth0 ts
 
 ## Overview
 
