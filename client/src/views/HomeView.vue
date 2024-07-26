@@ -1,16 +1,39 @@
 <template>
-  <div>
-    <nav class="navbar">
-      <span class="navbar-brand">Logged in as: John Doe</span>
-    </nav>
+  <div v-if="!$auth.loading">
+    <nav   class="navbar">
+    <div class="navbar-left">
+      <img :src="userPicture" class="user-picture" alt="User Picture">
+
+      <div class="user-info">
+        <h2>{{ $auth.user.name }}</h2>
+        <p>{{ $auth.user.email }}</p>
+      </div>
+    </div>
+    <div class="navbar-right">
+      <button class="primary-btn2" v-if="$auth.isAuthenticated" @click="logout">Log out</button>
+    </div>
+  </nav>
 
     <div class="button-container">
-      <button class="primary-btn" v-if="!isAuthenticated" @click="handleLogin">Link Outlook Account</button>
-      <button class="primary-btn" v-else @click="handlePageChange('mails')">Mails</button>
-      <button class="primary-btn ml-4" v-if="!isAuthenticated && currentPage === 'link-account'" @click="handlePageChange('link-account')">Link Account</button>
+      <button class="primary-btn" v-if="!isAuthenticated" @click="handleLogin">
+        Link Outlook Account
+      </button>
+      <button class="primary-btn" v-else @click="handlePageChange('mails')">
+        Mails
+      </button>
+      <button 
+        class="primary-btn ml-4"
+        v-if="!isAuthenticated && currentPage === 'link-account'"
+        @click="handlePageChange('link-account')"
+      >
+        Link Account
+      </button>
     </div>
 
-    <Mails v-if="isAuthenticated && currentPage === 'mails'" :accountId="accountId" />
+    <Mails
+      v-if="isAuthenticated && currentPage === 'mails'"
+      :account="account"
+    />
   </div>
 </template>
 
@@ -18,18 +41,27 @@
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import Mails from "@/views/Mails.vue";
-import Accounts from "@/views/Accounts.vue";
 
+interface Account {
+  refreshToken: string;
+  email: string;
+  id: string;
+  accessToken: string;
+}
 @Component({
   components: {
-    Mails,
-    Accounts
+    Mails
   }
 })
-export default class App extends Vue {
+
+export default class HomeView extends Vue {
   isAuthenticated: boolean = false;
   currentPage: string = '';
-  accountId: string = '';
+  account: Account ;
+ 
+  get userPicture(): string {
+    return this.$auth.user ? this.$auth.user.picture : '';
+  }
 
   async checkAuthentication() {
     try {
@@ -37,9 +69,8 @@ export default class App extends Vue {
         "http://localhost:3000/isAuthenticated",
         { withCredentials: true }
       );
-      // alert("isAuthenticated:"+response.data.isAuthenticated)
       this.isAuthenticated = response.data.isAuthenticated;
-      this.accountId = response.data.account;
+      this.account = response.data.account;
       if (this.isAuthenticated) {
         this.currentPage = 'mails';
       }
@@ -48,6 +79,11 @@ export default class App extends Vue {
     }
   }
 
+  logout () {
+    this.$auth.logout({
+      returnTo: window.location.origin
+    })
+  }
   handlePageChange(page: string) {
     this.currentPage = page;
   }
@@ -58,6 +94,8 @@ export default class App extends Vue {
 
   mounted() {
     this.checkAuthentication();
+    // console.log('Value of $auth:', this.$auth.user);
+
   }
 }
 </script>
@@ -71,11 +109,6 @@ export default class App extends Vue {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-brand {
-  font-size: 1.25rem;
-  font-weight: 500;
 }
 
 
@@ -100,5 +133,57 @@ export default class App extends Vue {
 
 .ml-4 {
   margin-left: 16px;
+}
+.navbar {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.user-picture {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.user-info p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.primary-btn2 {
+  background-color: white;
+  color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 </style>

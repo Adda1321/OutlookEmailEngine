@@ -36,8 +36,9 @@ by assigning the environment variable PG_DATABASE_URL.
 
    ```sh
    npm i
-   npm run dev
+   npm run serve
 
 ***Notes:***
+Node version 16
 The client is built vue create.
 npm create vue@legacy // https://github.com/vuejs/create-vue

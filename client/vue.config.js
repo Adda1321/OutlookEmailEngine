@@ -1,6 +1,8 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  transpileDependencies: [
-    'vuetify'
-  ]
-})
+const webpack = require('webpack')
+
+module.exports = {
+  devServer: {
+    port: 3001
+  }
+}
+

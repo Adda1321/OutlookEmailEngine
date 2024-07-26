@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Mails</h1>
+    <h3>Outlook is loggedIn as: {{ this.account.email }}</h3>
     <button @click="handleRefresh">Refresh</button>
     <table>
       <thead>
@@ -30,18 +30,22 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FETCH_ACCOUNT_EMAILS } from "@/graphql/mutation"; // Adjust the path accordingly
-
+interface Account {
+  refreshToken: string;
+  email: string;
+  id: string;
+  accessToken: string;
+}
 @Component
 export default class Mails extends Vue {
-  @Prop({ required: true }) accountId!: string;
+  @Prop({ required: true }) account!: Account;
   emails: Array<any> = [];
 
   async fetchEmails() {
     try {
-      console.log("PROPSSSS",this.accountId)
       const response = await this.$apollo.query({
         query: FETCH_ACCOUNT_EMAILS,
-        variables: { accountId: this.accountId },
+        variables: { accountId: this.account.id },
       });
       this.emails = response.data.linked_accounts.flatMap((account: any) => 
         account.mails.map((mail: any) => ({

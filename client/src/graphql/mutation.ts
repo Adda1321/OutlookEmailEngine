@@ -14,4 +14,3 @@ export const FETCH_ACCOUNT_EMAILS = gql`
   }
 `;
 
-
