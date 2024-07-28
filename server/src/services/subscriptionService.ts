@@ -1,8 +1,11 @@
-import { Client } from '@microsoft/microsoft-graph-client';
-import User from '../types/user';
-import { exec } from 'child_process';
-import { NOTIFICATION_URL } from '../config/azureConfig';
-import { updateAccessToken, initializeClientWithAccessToken } from '../services/authService';
+import { Client } from "@microsoft/microsoft-graph-client";
+import User from "../types/user";
+import { exec } from "child_process";
+import { NOTIFICATION_URL } from "../config/azureConfig";
+import {
+  updateAccessToken,
+  initializeClientWithAccessToken,
+} from "../services/authService";
 
 export async function createSubscription(user: User) {
   await updateAccessToken(user);
@@ -10,7 +13,7 @@ export async function createSubscription(user: User) {
   // Check if accessToken is defined
   const accessToken = user.accessToken;
   if (!accessToken) {
-    throw new Error('Access token is not available');
+    throw new Error("Access token is not available");
   }
 
   const client = initializeClientWithAccessToken(accessToken);
@@ -24,14 +27,38 @@ export async function createSubscription(user: User) {
     notificationUrl: `${NOTIFICATION_URL}/api/notifications`,
     resource: "/me/messages",
     expirationDateTime: expirationDate.toISOString(),
-    clientState: "SecretClientState"
+    clientState: "SecretClientState",
   };
+  // get the list of subscriptionsss
+  let response_sub_creation;
+  try {
+    // Get all subscriptions
+    const get_all_subscriptions = await client.api("/subscriptions").get();
+    console.log("get_all_subscriptions_value", get_all_subscriptions.value);
 
-  const response = await client.api('/subscriptions').post(subscriptionPayload);
+    // Delete all existing subscriptions
+    for (const subscription of get_all_subscriptions.value) {
+      try {
+        await client.api(`/subscriptions/${subscription.id}`).delete();
+        console.log(`Subscription ${subscription.id} deleted successfully`);
+      } catch (deleteError) {
+        console.error(
+          `Error deleting subscription ${subscription.id}:`,
+          deleteError
+        );
+      }
+    }
 
-  return { user, subscriptionData: response };
+    // Create a new subscription
+    response_sub_creation = await client
+      .api("/subscriptions")
+      .post(subscriptionPayload);
+  } catch (error) {
+    console.error("Error managing subscriptions:", error);
+  }
+  console.log("New subscription created:", response_sub_creation);
+  return { user, subscriptionData: response_sub_creation };
 }
-
 
 export async function updateUserAccount(user: User, subscriptionData: any) {
   const queryUserAccountCommand = `
@@ -48,14 +75,14 @@ export async function updateUserAccount(user: User, subscriptionData: any) {
   return new Promise<void>((resolve, reject) => {
     exec(queryUserAccountCommand, (error, stdout, stderr) => {
       if (error) {
-        console.error('Error retrieving user account:', stderr);
+        console.error("Error retrieving user account:", stderr);
         reject(new Error(stderr));
         return;
       }
 
       const result = JSON.parse(stdout);
       if (result.hits.total.value === 0) {
-        reject(new Error('User account not found'));
+        reject(new Error("User account not found"));
         return;
       }
 
@@ -75,7 +102,7 @@ export async function updateUserAccount(user: User, subscriptionData: any) {
 
         exec(updateUserAccountCommand, (error, stdout, stderr) => {
           if (error) {
-            console.error('Error updating user account:', stderr);
+            console.error("Error updating user account:", stderr);
             reject(new Error(stderr));
             return;
           }
