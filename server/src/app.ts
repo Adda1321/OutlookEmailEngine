@@ -11,8 +11,6 @@ import User from './types/user';
 
 //Routes import
 import authRoutes from './routes/authRoutes';
-import accountRoutes from './routes/accountRoutes'
-import userRoutes from './routes/userRoutes'
 import emailRoutes from './routes/emailRoutes'
 import subscriptionRoutes from './routes/subscriptionRoutes'
 import notificationRoutes from './routes/notificationRoutes'
@@ -61,10 +59,8 @@ app.use(passport.session());
 
 //Routes
 app.use('/', authRoutes)
-app.use('/', userRoutes)
 app.use('/', emailRoutes)
 app.use('/', notificationRoutes)
-app.use(accountRoutes)
 app.use(subscriptionRoutes)
 
 

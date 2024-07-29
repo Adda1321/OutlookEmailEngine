@@ -43,10 +43,14 @@ export default class Mails extends Vue {
 
   async fetchEmails() {
     try {
+      console.log("Fetch email hit")
       const response = await this.$apollo.query({
         query: FETCH_ACCOUNT_EMAILS,
         variables: { accountId: this.account.id },
+        fetchPolicy: 'no-cache',
       });
+      console.log("Fetch email responseee", response.data.linked_accounts)
+
       this.emails = response.data.linked_accounts.flatMap((account: any) => 
         account.mails.map((mail: any) => ({
           account_email: account.account_email,

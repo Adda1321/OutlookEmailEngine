@@ -10,7 +10,7 @@ const configs: any = {
 };
 
 const cca1 = new ConfidentialClientApplication(configs);
-
+// I am not usig refreshToken for now , not saving in the database against the account
 export async function getNewAccessToken(refreshToken: string): Promise<{ accessToken: string, refreshToken?: string }> {
   const refreshTokenRequest = {
     refreshToken,

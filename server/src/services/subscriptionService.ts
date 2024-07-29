@@ -34,7 +34,6 @@ export async function createSubscription(user: User) {
   try {
     // Get all subscriptions
     const get_all_subscriptions = await client.api("/subscriptions").get();
-    console.log("get_all_subscriptions_value", get_all_subscriptions.value);
 
     // Delete all existing subscriptions
     for (const subscription of get_all_subscriptions.value) {

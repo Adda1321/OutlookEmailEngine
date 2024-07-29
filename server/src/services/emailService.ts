@@ -33,7 +33,6 @@ export const fetchEmailsAndIndex = async (user: User) => {
   let allEmails: any[] = [];
   let response = await client.api("/me/messages").get();
   allEmails.push(...response.value);
-  // console.log("ALLEMAILSSSS", allEmails);
   const account_id =
     createAccount_response.data?.insert_linked_accounts?.returning[0]
       ?.account_id;
@@ -41,12 +40,12 @@ export const fetchEmailsAndIndex = async (user: User) => {
     return {
       email_id: email.id,
       account_id,
-      from_name: email.isDraft ? null : email.from.emailAddress.name,
+      from_name: email.isDraft ? null : email.from?email.from.emailAddress.name:"from username@mail.com",
       to_name:
         email.isDraft || !email.toRecipients
           ? null
           : email.toRecipients
-              .map((recipient: any) => recipient.emailAddress.name)
+              .map((recipient: any) => recipient?recipient.emailAddress.name:"from username@mail.com")
               .join(", "),
       body: email.bodyPreview,
       subject: email.subject,
@@ -64,60 +63,5 @@ export const fetchEmailsAndIndex = async (user: User) => {
 
   return { data: allEmails };
 
-  // const tempFilePath = path.join(__dirname, 'bulk_data.ndjson');
-  // fs.writeFileSync(tempFilePath, bulkData);
-
-  // const curlCommand = `
-  //   curl -X POST "http://localhost:9200/_bulk" -H "Content-Type: application/x-ndjson" --data-binary @${tempFilePath}
-  // `;
-
-  // return new Promise<void>((resolve, reject) => {
-  //   exec(curlCommand, (error, stdout, stderr) => {
-  //     fs.unlinkSync(tempFilePath);
-
-  //     if (error) {
-  //       console.error('Error indexing emails:', stderr);
-  //       reject(new Error(stderr));
-  //     } else {
-  //       console.log('Bulk indexing succeeded:', stdout);
-  //       resolve();
-  //     }
-  //   });
-  // });
-};
-
-export const queryEmails = async (userId: string) => {
-  const query = `
-    curl -X GET "http://localhost:9200/account_mails/_search" -H 'Content-Type: application/json' -d'
-    {
-      "query": {
-        "match": {
-          "account_id": "${userId}"
-        }
-      },
-      "size": 1000
-    }'
-  `;
-
-  return new Promise<any[]>((resolve, reject) => {
-    exec(query, (error, stdout, stderr) => {
-      if (error) {
-        console.error("Error querying emails:", stderr);
-        reject(new Error(stderr));
-      }
-
-      const result = JSON.parse(stdout);
-      if (
-        !result.hits ||
-        !result.hits.hits ||
-        !Array.isArray(result.hits.hits)
-      ) {
-        console.error("Invalid data format received:", result);
-        reject(new Error("Invalid data format received"));
-      }
-
-      const emails = result.hits.hits.map((hit: any) => hit._source);
-      resolve(emails);
-    });
-  });
+ 
 };

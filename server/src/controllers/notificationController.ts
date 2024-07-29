@@ -5,11 +5,9 @@ export const notificationHandler = async (req: Request, res: Response) => {
   const validationToken = req.query.validationToken as string;
 
   if (validationToken) {
-    // console.log('Validation token received:', validationToken);
     return res.status(200).send(validationToken);
   }
 
-  // console.log('Notification received:', req.body);
   const notifications = req.body.value;
 
   try {

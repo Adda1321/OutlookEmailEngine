@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { fetchEmailsAndIndex, queryEmails } from "../services/emailService";
+import { fetchEmailsAndIndex } from "../services/emailService";
 import axios from "axios";
 
 interface User {
@@ -31,18 +31,5 @@ export const initialFetchController = async (req: Request, res: Response) => {
       message: "Error fetching or indexing emails",
       details: error.message,
     });
-  }
-};
-
-export const queryEmailsController = async (req: Request, res: Response) => {
-  try {
-    const user = req.user as User;
-    const emails = await queryEmails(user.id);
-    res.json(emails);
-  } catch (error: any) {
-    console.error("Error querying emails:", error);
-    res
-      .status(500)
-      .json({ message: "Error querying emails", details: error.message });
   }
 };
