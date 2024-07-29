@@ -41,12 +41,16 @@ So ue ngrok to map 3000 and use ngrok publick url in environment variables.
 
    ```sh
    npm i
-   npm run dev
+   npm run serve
 
 ***Notes:***
 Node version 16
 The client is built vue create.
-npm create vue@legacy // https://github.com/vuejs/create-vue
+
+***References:***
+[Integrate Auth0 with Vue2 Typescript (CLI) ](https://github.com/RisingStack/auth0-ts-vue-example) [blog](https://blog.risingstack.com/auth0-vue-typescript-quickstart-docs/)
+
+[Install Vue2 with Vite ](https://github.com/vuejs/create-vue)
 
 
 ### Working
