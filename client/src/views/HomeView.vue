@@ -30,10 +30,10 @@
       </button>
     </div>
 
-    <!-- <Mails
+    <Mails
       v-if="isAuthenticated && currentPage === 'mails'"
       :account="account"
-    /> -->
+    />
   </div>
 </template>
 

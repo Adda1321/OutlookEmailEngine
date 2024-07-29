@@ -1,7 +1,6 @@
 <template>
   <div>
     <h3>Outlook is loggedIn as: {{ this.account.email }}</h3>
-    <button @click="handleRefresh">Refresh</button>
     <table>
       <thead>
         <tr>
@@ -30,45 +29,44 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FETCH_ACCOUNT_EMAILS } from "@/graphql/mutation"; // Adjust the path accordingly
+
 interface Account {
   refreshToken: string;
   email: string;
   id: string;
   accessToken: string;
 }
-@Component
+
+@Component({
+  apollo:{
+    $subscribe: {
+      fetchAccountEmails: {
+        query: FETCH_ACCOUNT_EMAILS,
+        variables() {
+          return {
+            accountId: this.account.id,
+          };
+        },
+        result({ data }: { data: any }) {
+          console.log("DATAA Sucessfull", data)
+          if (data && data.linked_accounts) {
+            // Flatten the data and update the emails array
+            this.emails = data.linked_accounts.flatMap((account: any) =>
+              account.mails.map((mail: any) => ({
+                account_email: account.account_email,
+                ...mail,
+              }))
+            );
+          }
+        },
+      },
+    },
+  }
+}
+)
 export default class Mails extends Vue {
   @Prop({ required: true }) account!: Account;
   emails: Array<any> = [];
-
-  async fetchEmails() {
-    try {
-      console.log("Fetch email hit")
-      const response = await this.$apollo.query({
-        query: FETCH_ACCOUNT_EMAILS,
-        variables: { accountId: this.account.id },
-        fetchPolicy: 'no-cache',
-      });
-      console.log("Fetch email responseee", response.data.linked_accounts)
-
-      this.emails = response.data.linked_accounts.flatMap((account: any) => 
-        account.mails.map((mail: any) => ({
-          account_email: account.account_email,
-          ...mail
-        }))
-      );
-    } catch (error) {
-      console.error("Error fetching emails:", error);
-    }
-  }
-
-  handleRefresh() {
-    this.fetchEmails();
-  }
-
-  mounted() {
-    this.fetchEmails();
-  }
 }
 </script>
 
