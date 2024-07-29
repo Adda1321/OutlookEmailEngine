@@ -30,10 +30,10 @@
       </button>
     </div>
 
-    <Mails
+    <!-- <Mails
       v-if="isAuthenticated && currentPage === 'mails'"
       :account="account"
-    />
+    /> -->
   </div>
 </template>
 
@@ -41,6 +41,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import Mails from "@/views/Mails.vue";
+
+import { Auth0Plugin } from '../auth'
 
 interface Account {
   refreshToken: string;
@@ -58,6 +60,8 @@ export default class HomeView extends Vue {
   isAuthenticated: boolean = false;
   currentPage: string = '';
   account: Account ;
+  $auth!: Auth0Plugin; // Adjust 'Auth' to the type used in your plugin
+
  
   get userPicture(): string {
     return this.$auth.user ? this.$auth.user.picture : '';
@@ -93,6 +97,8 @@ export default class HomeView extends Vue {
   }
 
   mounted() {
+  console.log('Auth plugin value:', this.$auth);
+
     this.checkAuthentication();
     // console.log('Value of $auth:', this.$auth.user);
 
