@@ -1,0 +1,11 @@
+table:
+  name: users
+  schema: public
+array_relationships:
+  - name: linked_accounts
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: linked_accounts
+          schema: public

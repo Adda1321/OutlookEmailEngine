@@ -1,0 +1,3 @@
+- "!include public_linked_accounts.yaml"
+- "!include public_mails.yaml"
+- "!include public_users.yaml"

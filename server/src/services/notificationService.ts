@@ -71,7 +71,7 @@ export async function processNotification(notification: any) {
         );
         console.log("Email saved to database successfully:");
       } catch (error) {
-        console.error("Error saving email to database:");
+        console.error("Error saving email to database :");
       }
     } catch (error) {
       console.error("Error fetching message from Microsoft Graph:", error);

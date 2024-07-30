@@ -13,6 +13,7 @@ import User from './types/user';
 import authRoutes from './routes/authRoutes';
 import emailRoutes from './routes/emailRoutes'
 import subscriptionRoutes from './routes/subscriptionRoutes'
+import mainUser from "./routes/mainUser"
 import notificationRoutes from './routes/notificationRoutes'
 
 import * as dotenv from 'dotenv';
@@ -61,6 +62,8 @@ app.use(passport.session());
 app.use('/', authRoutes)
 app.use('/', emailRoutes)
 app.use('/', notificationRoutes)
+app.use('/', mainUser)
+
 app.use(subscriptionRoutes)
 
 

@@ -1,0 +1,36 @@
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: createOrUpdateAccount
+  methods:
+    - POST
+  name: createOrUpdateAccount
+  url: createaccount
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: getAccountBySubscriptionId
+  methods:
+    - GET
+  name: getAccountBySubscriptionId
+  url: getaccountbysubscriptionid
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: upsertMails
+  methods:
+    - POST
+  name: upsertMails
+  url: insert_mails
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: updateAccount
+  methods:
+    - POST
+  name: updateAccount
+  url: updateaccount

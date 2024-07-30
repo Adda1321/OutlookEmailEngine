@@ -1,0 +1,2 @@
+CREATE TABLE "public"."mails" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "from_name" text NOT NULL, "to_name" text NOT NULL, "body" text NOT NULL, "account_id" text NOT NULL, "email_id" text NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("account_id") REFERENCES "public"."linked_accounts"("account_id") ON UPDATE restrict ON DELETE restrict);COMMENT ON TABLE "public"."mails" IS E'Table to store the emails form mailbox ';
+CREATE EXTENSION IF NOT EXISTS pgcrypto;

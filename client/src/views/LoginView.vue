@@ -12,6 +12,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import HomeView from "./HomeView.vue";
+import axios from "axios";
 
 @Component({
   components: {

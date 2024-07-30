@@ -1,0 +1,37 @@
+- name: allowed-queries
+  definition:
+    queries:
+      - name: createOrUpdateAccount
+        query: |
+          mutation createOrUpdateAccount ($accessToken: String!, $accountEmail: String!, $accountId: String!, $createdAt: String!, $userId: uuid!) {
+            insert_linked_accounts(objects: {accessToken:$accessToken,account_email:$accountEmail,account_id:$accountId,createdAt:$createdAt,user_id:$userId}, on_conflict: {constraint:linked_accounts_account_id_key,update_columns:[accessToken,account_email,createdAt,user_id]}) {
+              returning {
+                account_id
+              }
+            }
+          }
+      - name: updateAccount
+        query: |
+          mutation updateAccount ($account_email: String!, $subscription_id: String!, $accessToken: String!) {
+            update_linked_accounts(where: {account_email:{_eq:$account_email}}, _set: {subscription_id:$subscription_id,accessToken:$accessToken}) {
+              affected_rows
+            }
+          }
+      - name: getAccountBySubscriptionId
+        query: |
+          query getAccountBySubscriptionId ($subscription_id: String!) {
+            linked_accounts(where: {subscription_id:{_eq:$subscription_id}}) {
+              id
+              account_email
+              accessToken
+              account_id
+              subscription_id
+            }
+          }
+      - name: upsertMails
+        query: |
+          mutation upsertMails ($objects: [mails_insert_input!]!) {
+            insert_mails(objects: $objects, on_conflict: {constraint:mails_email_id_key,update_columns:[from_name,to_name,body,subject]}) {
+              affected_rows
+            }
+          }
