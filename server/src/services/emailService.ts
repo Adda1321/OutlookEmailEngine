@@ -16,8 +16,12 @@ export const fetchEmailsAndIndex = async (user: User) => {
     throw new Error("Access token is not available");
   }
   const appUser = appUserStore.getAppUser();
+  if(!appUser)
+  {
+    throw new Error("First Login to main app: Auth0 accessToken is expired");
+
+  }
   // in User table we have this user_id means this user is linking the account
-  console.log("AUTHHHHHHIDDDDD",appUser)
   const accountDetails = {
     userId: appUser?.uuid,
     accountId: user.id,

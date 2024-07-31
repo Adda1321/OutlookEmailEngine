@@ -1,18 +1,24 @@
 <template>
   <div v-if="!$auth.loading">
-    <nav   class="navbar">
-    <div class="navbar-left">
-      <img :src="userPicture" class="user-picture" alt="User Picture">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <img :src="userPicture" class="user-picture" alt="User Picture" />
 
-      <div class="user-info">
-        <h2>{{ $auth.user.name }}</h2>
-        <p>{{ $auth.user.email }}</p>
+        <div class="user-info">
+          <h2>{{ $auth.user.name }}</h2>
+          <p>{{ $auth.user.email }}</p>
+        </div>
       </div>
-    </div>
-    <div class="navbar-right">
-      <button class="primary-btn2" v-if="$auth.isAuthenticated" @click="logout">Log out</button>
-    </div>
-  </nav>
+      <div class="navbar-right">
+        <button
+          class="primary-btn2"
+          v-if="$auth.isAuthenticated"
+          @click="logout"
+        >
+          Log out
+        </button>
+      </div>
+    </nav>
 
     <div class="button-container">
       <button class="primary-btn" v-if="!isAuthenticated" @click="handleLogin">
@@ -21,7 +27,7 @@
       <button class="primary-btn" v-else @click="handlePageChange('mails')">
         Mails
       </button>
-      <button 
+      <button
         class="primary-btn ml-4"
         v-if="!isAuthenticated && currentPage === 'link-account'"
         @click="handlePageChange('link-account')"
@@ -42,7 +48,7 @@ import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import Mails from "@/views/Mails.vue";
 
-import { Auth0Plugin } from '../auth'
+import { Auth0Plugin } from "../auth";
 
 interface Account {
   refreshToken: string;
@@ -52,19 +58,17 @@ interface Account {
 }
 @Component({
   components: {
-    Mails
-  }
+    Mails,
+  },
 })
-
 export default class HomeView extends Vue {
   isAuthenticated: boolean = false;
-  currentPage: string = '';
-  account: Account ;
+  currentPage: string = "";
+  account: Account;
   $auth!: Auth0Plugin; // Adjust 'Auth' to the type used in your plugin
 
- 
   get userPicture(): string {
-    return this.$auth.user ? this.$auth.user.picture : '';
+    return this.$auth.user ? this.$auth.user.picture : "";
   }
 
   async checkAuthentication() {
@@ -76,17 +80,26 @@ export default class HomeView extends Vue {
       this.isAuthenticated = response.data.isAuthenticated;
       this.account = response.data.account;
       if (this.isAuthenticated) {
-        this.currentPage = 'mails';
+        this.currentPage = "mails";
       }
     } catch (error) {
       console.error("Error checking authentication status:", error);
     }
   }
 
-  logout () {
-    this.$auth.logout({
-      returnTo: window.location.origin
-    })
+  async logout() {
+   
+    await axios
+      .get("http://localhost:3000/logout", { withCredentials: true })
+      .then((res) => {
+        this.$auth.logout({
+          returnTo: window.location.origin,
+        });
+        
+      })
+      .catch((e) => {
+        console.log("Failed to logout");
+      });
   }
   handlePageChange(page: string) {
     this.currentPage = page;
@@ -98,7 +111,6 @@ export default class HomeView extends Vue {
 
   mounted() {
     this.checkAuthentication();
-
   }
 }
 </script>
@@ -113,7 +125,6 @@ export default class HomeView extends Vue {
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 
 .button-container {
   margin-top: 20px;
@@ -172,7 +183,6 @@ export default class HomeView extends Vue {
 .user-info p {
   margin: 0;
   font-size: 14px;
-  opacity: 0.8;
 }
 
 .navbar-right {

@@ -48,7 +48,7 @@ interface Account {
           };
         },
         result({ data }: { data: any }) {
-          console.log("DATAA Sucessfull", data)
+          console.log("mail data fetched sucessfull", data)
           if (data && data.linked_accounts) {
             // Flatten the data and update the emails array
             this.emails = data.linked_accounts.flatMap((account: any) =>
