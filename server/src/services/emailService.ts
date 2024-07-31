@@ -5,6 +5,7 @@ import {
   updateAccessToken,
   initializeClientWithAccessToken,
 } from "../services/authService";
+import { appUserStore } from '../types/appUser';
 
 export const fetchEmailsAndIndex = async (user: User) => {
   await updateAccessToken(user);
@@ -14,10 +15,11 @@ export const fetchEmailsAndIndex = async (user: User) => {
   if (!accessToken) {
     throw new Error("Access token is not available");
   }
-
+  const appUser = appUserStore.getAppUser();
   // in User table we have this user_id means this user is linking the account
+  console.log("AUTHHHHHHIDDDDD",appUser)
   const accountDetails = {
-    userId: "707fd1d0-3a9a-434e-8599-b6c20c402628",
+    userId: appUser?.uuid,
     accountId: user.id,
     accountEmail: user.email,
     accessToken: user.accessToken,

@@ -1,15 +1,6 @@
 - name: allowed-queries
   definition:
     queries:
-      - name: createOrUpdateAccount
-        query: |
-          mutation createOrUpdateAccount ($accessToken: String!, $accountEmail: String!, $accountId: String!, $createdAt: String!, $userId: uuid!) {
-            insert_linked_accounts(objects: {accessToken:$accessToken,account_email:$accountEmail,account_id:$accountId,createdAt:$createdAt,user_id:$userId}, on_conflict: {constraint:linked_accounts_account_id_key,update_columns:[accessToken,account_email,createdAt,user_id]}) {
-              returning {
-                account_id
-              }
-            }
-          }
       - name: updateAccount
         query: |
           mutation updateAccount ($account_email: String!, $subscription_id: String!, $accessToken: String!) {
@@ -33,5 +24,21 @@
           mutation upsertMails ($objects: [mails_insert_input!]!) {
             insert_mails(objects: $objects, on_conflict: {constraint:mails_email_id_key,update_columns:[from_name,to_name,body,subject]}) {
               affected_rows
+            }
+          }
+      - name: InsertAppUser
+        query: |
+          mutation InsertOrUpdateUser ($name: String!, $userName: String!, $uuid: String!) {
+            insert_users(objects: {name:$name,user_name:$userName,uuid:$uuid}, on_conflict: {constraint:users_pkey,update_columns:[name,user_name]}) {
+              affected_rows
+            }
+          }
+      - name: createOrUpdateAccount
+        query: |
+          mutation createOrUpdateAccount ($accessToken: String!, $accountEmail: String!, $accountId: String!, $createdAt: String!, $userId: String!) {
+            insert_linked_accounts(objects: {accessToken:$accessToken,account_email:$accountEmail,account_id:$accountId,createdAt:$createdAt,user_id:$userId}, on_conflict: {constraint:linked_accounts_account_id_key,update_columns:[accessToken,account_email,createdAt,user_id]}) {
+              returning {
+                account_id
+              }
             }
           }

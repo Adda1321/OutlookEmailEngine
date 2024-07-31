@@ -3,7 +3,7 @@ import { isAuthenticated, authenticateOutlook, outlookCallback } from '../contro
 
 const router = Router();
 
-router.get('/auth/outlook', authenticateOutlook);
+router.get('/auth/outlook',authenticateOutlook);
 router.get('/delegated/callback', outlookCallback);
 router.get('/isAuthenticated', isAuthenticated);
 

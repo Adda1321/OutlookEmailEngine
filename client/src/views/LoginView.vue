@@ -2,32 +2,62 @@
   <div class="">
     <div v-if="!$auth.loading" class="auth-container">
       <!-- show login when not authenticated -->
-      <button v-if="!$auth.isAuthenticated" @click="login" class="btn-primary">Log in</button>
+      <button v-if="!$auth.isAuthenticated" @click="login" class="btn-primary">
+        Log in
+      </button>
       <!-- show HomeView when authenticated -->
-      <HomeView v-if="$auth.isAuthenticated"/>
+      <HomeView v-if="$auth.isAuthenticated" />
     </div>
   </div>
 </template> 
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import HomeView from "./HomeView.vue";
 import axios from "axios";
 
 @Component({
   components: {
-    HomeView
+    HomeView,
   },
 })
 export default class LoginView extends Vue {
   login() {
-    this.$auth.loginWithRedirect({})
+    this.$auth.loginWithRedirect({});
+  }
+
+  handlecreateAppUser() {
+    try {
+      this.$auth.getUser().then((user) => {
+        const userData = {
+          uuid: user.id,
+          name: user.name,
+          userName: user.email,
+        };
+        axios
+          .post("http://localhost:3000/createAppUser", userData)
+          .then((response) => {
+            console.log("App_User created Successfully", response.data);
+          })
+          .catch((error) => {
+            console.log("Error:", error.response.data);
+          });
+      });
+    } catch (e) {
+      console.log("Error:", e.message);
+    }
+  }
+
+  @Watch("$auth.isAuthenticated")
+  onAuthChanged(newVal: boolean) {
+    if (newVal) {
+      this.handlecreateAppUser();
+    }
   }
 }
 </script>
 
-<style scoped> 
-
+<style scoped>
 .auth-container {
   text-align: center;
 }
@@ -45,5 +75,4 @@ export default class LoginView extends Vue {
 .btn-primary:hover {
   background-color: #0056b3;
 }
-
 </style>

@@ -97,10 +97,7 @@ export default class HomeView extends Vue {
   }
 
   mounted() {
-  console.log('Auth plugin value:', this.$auth);
-
     this.checkAuthentication();
-    // console.log('Value of $auth:', this.$auth.user);
 
   }
 }

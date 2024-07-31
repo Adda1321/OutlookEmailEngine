@@ -2,6 +2,15 @@
   definition:
     query:
       collection_name: allowed-queries
+      query_name: InsertAppUser
+  methods:
+    - POST
+  name: InsertAppUser
+  url: createAppUser
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
       query_name: createOrUpdateAccount
   methods:
     - POST

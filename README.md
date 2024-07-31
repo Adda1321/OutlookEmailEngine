@@ -49,7 +49,7 @@ This project is organized into two main subdirectories:
 2. **Setup Client:**
 
    Navigate to the `client` directory and use the following commands to set up and start the client:
-
+   Register Your app in Auth0 and use credentials in client
    ```sh
    npm i
    npm run serve

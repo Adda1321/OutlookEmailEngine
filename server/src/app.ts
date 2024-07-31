@@ -3,23 +3,21 @@ import passport from 'passport';
 import session from 'express-session';
 import cors from 'cors';
 import 'isomorphic-fetch';
+import * as dotenv from 'dotenv';
+dotenv.config();
 const OutlookStrategy = require('passport-outlook').Strategy;
 
 import { OUTLOOK_CLIENT_ID, OUTLOOK_CLIENT_SECRET, OUTLOOK_CALLBACK_URL } from './config/azureConfig';
-
 import User from './types/user';
 
 //Routes import
 import authRoutes from './routes/authRoutes';
 import emailRoutes from './routes/emailRoutes'
 import subscriptionRoutes from './routes/subscriptionRoutes'
-import mainUser from "./routes/mainUser"
 import notificationRoutes from './routes/notificationRoutes'
-
-import * as dotenv from 'dotenv';
+import appUserRoutes from './routes/appUserRoutes'
 
 const app = express();
-dotenv.config();
 
 app.use(cors({
   origin: 'http://localhost:3001',
@@ -62,9 +60,7 @@ app.use(passport.session());
 app.use('/', authRoutes)
 app.use('/', emailRoutes)
 app.use('/', notificationRoutes)
-app.use('/', mainUser)
-
 app.use(subscriptionRoutes)
-
+app.use('/',appUserRoutes); 
 
 export default app
